@@ -98,7 +98,10 @@ GlobalListener.addListener({
 		
 		var sel = v.selection; // cache property access
 		
-		if (sel.length > 2){
+		// Notepad++ own smart highlighting only marks the visible lines, so the
+		// navigation bar would show a partial picture. Mark the whole document
+		// for every selection of two or more characters (#129).
+		if (sel.length >= 2){
 			if (this.lastHighlighted != v.bytePos){
 				MenuCmds.SEARCH_MARKALLEXT5();
 				this.lastHighlighted = v.bytePos;
