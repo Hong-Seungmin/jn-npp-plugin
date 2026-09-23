@@ -38,17 +38,9 @@
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <!-- Single toolset for all configurations; override on the command line with -p:PlatformToolset=v14x -->
+  <PropertyGroup Label="Configuration">
     <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -283,24 +275,7 @@
     <ClInclude Include="npp\PluginDefinition.h" />
     <ClInclude Include="npp\PluginInterface.h" />
     <ClInclude Include="npp\Scintilla.h" />
-    <CustomBuild Include="VersionInfo.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VersionInfo_tmpl.h;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VersionInfo_tmpl.h;%(AdditionalInputs)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="VersionInfo_tmpl.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VersionInfo.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VersionInfo.h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VersionInfo.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VersionInfo.h;%(Outputs)</Outputs>
-    </CustomBuild>
+    <ClInclude Include="VersionInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="common\common.idl">

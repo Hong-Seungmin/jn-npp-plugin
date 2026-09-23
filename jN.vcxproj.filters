@@ -136,6 +136,9 @@
     <ClInclude Include="npp\PluginInterface.h">
       <Filter>Npp</Filter>
     </ClInclude>
+    <ClInclude Include="VersionInfo.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
     <ClInclude Include="npp\Scintilla.h">
       <Filter>Npp</Filter>
     </ClInclude>
@@ -237,13 +240,5 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="GPL_and_Commercial.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="VersionInfo.h">
-      <Filter>Misc</Filter>
-    </CustomBuild>
-    <CustomBuild Include="VersionInfo_tmpl.h">
-      <Filter>Misc</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>
