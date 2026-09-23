@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file is part of jN, a plugin for Notepad++
 Copyright (C)2013 Eugen Kremer <eugen DOT kremer AT gmail DOT com>
 
