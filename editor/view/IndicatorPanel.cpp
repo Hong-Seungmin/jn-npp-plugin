@@ -168,48 +168,93 @@ bool IndicatorPanel::GetIndicatorLines() {
 	return true;
 }
 
+bool IndicatorPanel::GetScrollTrack(int& top, int& length) {
+	// Geometry of the vertical scrollbar track in window coordinates. Markers are
+	// laid out over exactly this track so that a marker of a line which is on
+	// screen lies inside the scrollbar thumb.
+	if (hasStyle(m_View.m_Handle, WS_VSCROLL)) {
+		SCROLLBARINFO sbi = { sizeof(SCROLLBARINFO) };
+		RECT wnd;
+		if (GetScrollBarInfo(m_View.m_Handle, OBJID_VSCROLL, &sbi)
+			&& !(sbi.rgstate[0] & STATE_SYSTEM_INVISIBLE)
+			&& GetWindowRect(m_View.m_Handle, &wnd)) {
+			// rcScrollBar is in screen coordinates, dxyLineButton is the arrow button height
+			top = (sbi.rcScrollBar.top - wnd.top) + sbi.dxyLineButton;
+			length = (sbi.rcScrollBar.bottom - sbi.rcScrollBar.top) - 2 * sbi.dxyLineButton;
+			return length > 0;
+		}
+	}
+
+	// No (visible) scrollbar: use the panel itself, minus the horizontal scrollbar
+	top = m_PanelRect.top;
+	length = m_PanelRect.bottom - m_PanelRect.top;
+	if (hasStyle(m_View.m_Handle, WS_HSCROLL))
+		length -= GetSystemMetrics(SM_CYHSCROLL);
+
+	return length > 0;
+}
+
+int IndicatorPanel::GetScrollRange() {
+	// Number of scroll positions of the view in display lines. Taken from the
+	// scrollbar itself, so it already includes wrapped sub lines and the extra
+	// page Scintilla adds when scrolling beyond the last line is allowed
+	// (SCI_SETENDATLASTLINE false, "Enable scrolling beyond last line" in Notepad++).
+	if (hasStyle(m_View.m_Handle, WS_VSCROLL)) {
+		SCROLLINFO si = { sizeof(SCROLLINFO), SIF_RANGE | SIF_PAGE };
+		if (GetScrollInfo(m_View.m_Handle, SB_VERT, &si) && si.nMax > si.nMin)
+			return si.nMax - si.nMin + 1;
+	}
+
+	// Fallback: replicate Scintilla's Editor::SetScrollBars
+	auto lines = m_View.sci(SCI_GETLINECOUNT, 0, 0);
+	if (lines <= 0)
+		return 0;
+
+	auto displayed = m_View.sci(SCI_VISIBLEFROMDOCLINE, lines - 1, 0) + m_View.sci(SCI_WRAPCOUNT, lines - 1, 0);
+	auto onScreen = m_View.sci(SCI_LINESONSCREEN, 0, 0);
+	auto endAtLastLine = m_View.sci(SCI_GETENDATLASTLINE, 0, 0);
+
+	auto range = displayed + (endAtLastLine ? 0 : (onScreen - 1));
+
+	return (int)max(range, onScreen);
+}
+
 void IndicatorPanel::GetIndicatorPixels() {
-	m_PixelIndicatorsLen = (m_PanelRect.bottom - m_PanelRect.top);
-
-	int indicatorThickness = ((m_PanelRect.right - m_PanelRect.left) + 1) / 2;
-
 	if (m_PixelIndicators) {
 		delete[] m_PixelIndicators;
 		m_PixelIndicators = NULL;
 	}
+	m_PixelIndicatorsLen = 0;
 
-	int scrollHHeight = GetSystemMetrics(SM_CYHSCROLL);
-	if (hasStyle(m_View.m_Handle, WS_VSCROLL))
-		m_PixelIndicatorsLen -= 2 * scrollHHeight;
-	if (hasStyle(m_View.m_Handle, WS_HSCROLL))
-		m_PixelIndicatorsLen -= scrollHHeight;
-
-	if (m_PixelIndicatorsLen <= 0)
+	int trackTop = 0;
+	int trackLength = 0;
+	if (!GetScrollTrack(trackTop, trackLength))
 		return; // not sufficient place
 
-	auto lines = m_View.sci(SCI_GETLINECOUNT, 0, 0);
+	int range = GetScrollRange();
+	if (range <= 0)
+		return;
 
-	auto lineHeight = m_View.sci(SCI_TEXTHEIGHT, 0, 0);
+	// The scrollbar maps [0, range) display lines linearly onto the track, so a
+	// marker uses the same mapping: y = line * track / range. The thickness is
+	// the size of one line on the track (at least 2px), so that it shrinks for
+	// long documents and grows with the font size for short ones.
+	float pixelPerLine = (float)trackLength / (float)range;
+	int indicatorThickness = max(2, (int)(pixelPerLine + 0.5f));
 
-	if (!(lineHeight && lines))
-		return; // avoid division by 0
-
-	auto visibleLines = m_View.sci(SCI_VISIBLEFROMDOCLINE, lines - 1, 0) + 1;
-	auto linesOnPage = (m_PixelIndicatorsLen) / lineHeight;
-
-	// maximum pixel per line on panel line height
-	float pixelPerLineOnPanel = (linesOnPage > visibleLines) ? lineHeight : (float)(m_PixelIndicatorsLen - indicatorThickness) / visibleLines;
-
+	m_PixelTop = trackTop;
+	m_PixelIndicatorsLen = trackLength;
 	m_PixelIndicators = new DWORD[m_PixelIndicatorsLen];
 
 	memset(m_PixelIndicators, 0, sizeof(DWORD) * m_PixelIndicatorsLen);
 
 	// setup mask
 	for (auto it = m_Indicators.begin(); it != m_Indicators.end(); ++it) {
-		int y = (int)(pixelPerLineOnPanel * (float)(it->first));
+		int y = (int)(pixelPerLine * (float)(it->first));
 
 		for (int t = y; t < (y + indicatorThickness) && t < m_PixelIndicatorsLen; t++) {
-			m_PixelIndicators[t] |= it->second;
+			if (t >= 0)
+				m_PixelIndicators[t] |= it->second;
 		}
 	}
 }
@@ -312,11 +357,9 @@ void IndicatorPanel::paintIndicators(HDC hdc){
 	if (!m_PixelIndicators || m_Disabled)
 		return;
 
-	bool vscroll = hasStyle(m_View.m_Handle, WS_VSCROLL);
-	int scrollHHeight	= GetSystemMetrics(SM_CXHSCROLL);
 	HBRUSH hbr3DFace = (HBRUSH)GetSysColorBrush(COLOR_3DFACE); 
 	
-	int topOffset = vscroll ? m_PanelRect.top + scrollHHeight : m_PanelRect.top;
+	int topOffset = m_PixelTop; // first pixel row of the scrollbar track, see GetIndicatorPixels
 
 	BOOL res = FillRect(hdc, &m_PanelRect, hbr3DFace);
 

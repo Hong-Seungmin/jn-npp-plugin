@@ -51,6 +51,7 @@ class IndicatorPanel
 
 	DWORD* m_PixelIndicators;
 	int  m_PixelIndicatorsLen;
+	int  m_PixelTop = 0; // window y coordinate of m_PixelIndicators[0]
 
 	static bool hasStyle(HWND hwnd, int style);
 
@@ -66,6 +67,8 @@ class IndicatorPanel
 	void ClearIndicators(int begin, int end);
 	bool GetIndicatorLines();
 	void GetIndicatorPixels();
+	bool GetScrollTrack(int& top, int& length);
+	int  GetScrollRange();
 
 	void paintIndicators();
 	void paintIndicators(HDC hdc);
