@@ -37,3 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define str(s) #s
 #define _VERSION_STR VERSION_MA ## . ## VERSION_MI ## . ## BUILD_NUMBER  ## . ## VERSION_REVISION
 
+// Wide-character version string, e.g. L"2.2.191.0" (two-level macro so the argument is expanded before L is pasted)
+#define _WIDEN2(x) L ## x
+#define _WIDEN(x) _WIDEN2(x)
+#define VERSION_WSTR _WIDEN(xstr(_VERSION_STR))
+

@@ -203,6 +203,12 @@
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <!-- Version macros for C++ sources (res.rc receives the same values below); passed by CI via nbgv -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>VERSION_MA=$(VersionMajor);VERSION_MI=$(VersionMinor);BUILD_NUMBER=$(BuildNumber);VERSION_REVISION=$(VersionRevision);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\AcceleratorHook.cpp" />
     <ClCompile Include="common\ActiveScriptSiteDebug.cpp" />

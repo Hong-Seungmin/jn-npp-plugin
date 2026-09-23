@@ -16,6 +16,8 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "PluginDefinition.h"
 #include "common\statics.h"
+#include "VersionInfo.h"
+#include <strsafe.h>
 
 //
 // The plugin data that Notepad++ needs
@@ -43,8 +45,17 @@ void about(){
 		return;
 
 	TCHAR buf[1024];
-	int r = LoadString(Statics::instance().hInstance, 1, buf, sizeof(buf));
-	MessageBox(nppData._nppHandle, buf, txtAbout, MB_OK|MB_ICONINFORMATION);
+	LoadString(Statics::instance().hInstance, 1, buf, _countof(buf));
+
+	TCHAR msg[1024 + 64];
+	StringCchPrintf(msg, _countof(msg), TEXT("%s\n\nVersion %s (%s)"), buf, VERSION_WSTR,
+#ifdef _WIN64
+		TEXT("x64")
+#else
+		TEXT("x86")
+#endif
+	);
+	MessageBox(nppData._nppHandle, msg, txtAbout, MB_OK|MB_ICONINFORMATION);
 }
 
 //
