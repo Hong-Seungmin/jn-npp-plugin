@@ -11,3 +11,15 @@ Release
 /.vs
 /*.opensdf
 /jN.vcxproj.user
+
+# build output directories (per-platform) and MIDL/VS generated files
+/x64/
+/Win32/
+/Interfaces.c
+/dlldata.c
+*.tlb
+*.aps
+*.user
+*.VC.db
+*.VC.opendb
+/.vs/
