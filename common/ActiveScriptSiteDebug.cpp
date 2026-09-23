@@ -94,18 +94,20 @@ ActiveScriptSiteDebug::ActiveScriptSiteDebug(TCHAR *appName, IActiveScript* as):
 		throw TEXT("Debug application adding failed");
 }
 
-ActiveScriptSiteDebug::~ActiveScriptSiteDebug(){
+ActiveScriptSiteDebug::~ActiveScriptSiteDebug() noexcept {
 	for(Docs::const_iterator it=m_Docs.begin(); it!=m_Docs.end(); ++it){
 		it->second->Detach();
 		it->second->Release();
 	}
 
-	if (FAILED(m_Pdm->RemoveApplication(m_AppCookie)))
-		throw "Debug application removing failed";
+	// Destructors are implicitly noexcept: throwing here would call std::terminate
+	// and take Notepad++ down during shutdown. A failure of the debug manager at
+	// this point is not actionable, so it is only reported to the debugger output.
+	if (m_Pdm && FAILED(m_Pdm->RemoveApplication(m_AppCookie)))
+		OutputDebugString(TEXT("jN: IProcessDebugManager::RemoveApplication failed"));
 
 	if (m_App)
 		m_App->Close();
-
 }
 
 DWORD ActiveScriptSiteDebug::AddScript(BSTR script, BSTR name){

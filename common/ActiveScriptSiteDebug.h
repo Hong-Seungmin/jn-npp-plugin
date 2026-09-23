@@ -58,5 +58,5 @@ public:
 	IDebugDocumentHelper* GetDocumentFromContext(DWORD_PTR dwSourceContext);
 
 	ActiveScriptSiteDebug(TCHAR* appName, IActiveScript* as);
-	~ActiveScriptSiteDebug();
+	~ActiveScriptSiteDebug() noexcept;
 };
