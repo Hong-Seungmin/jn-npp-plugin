@@ -188,9 +188,9 @@ HRESULT STDMETHODCALLTYPE CEditorView::get_files(IDispatch **result){
 	// get filenames
 	int realyFiles=0;
 	if (m_Id==1){
-		realyFiles = NPPM(GETOPENFILENAMESPRIMARY,filesArray,(int)nbFiles);
+		realyFiles = NPPM(GETOPENFILENAMESPRIMARY_DEPRECATED,filesArray,(int)nbFiles);
 	}else {
-		realyFiles = NPPM(GETOPENFILENAMESSECOND,filesArray,(int)nbFiles); 
+		realyFiles = NPPM(GETOPENFILENAMESSECOND_DEPRECATED,filesArray,(int)nbFiles); 
 	}
 	
 	// create JS Array and fill it

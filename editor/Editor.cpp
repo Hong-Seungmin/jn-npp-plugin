@@ -22,17 +22,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SUBCLASSING TEXT("jN.Npp.Subclassing")
 
 
+// Names of the languages in the order of enum LangType (npp/Notepad_plus_msgs.h).
+// Index == LangType value, so the list must be extended whenever the enum grows.
+// Historic names (TXT, NFO, JS) are kept, scripts compare against them.
 const TCHAR* langs[] ={
-	TEXT("TXT"), TEXT("PHP") , TEXT("C"), TEXT("CPP"), TEXT("CS"), TEXT("OBJC"), TEXT("JAVA"), TEXT("RC"),
+	TEXT("TXT"), TEXT("PHP"), TEXT("C"), TEXT("CPP"), TEXT("CS"), TEXT("OBJC"), TEXT("JAVA"), TEXT("RC"),
 	TEXT("HTML"), TEXT("XML"), TEXT("MAKEFILE"), TEXT("PASCAL"), TEXT("BATCH"), TEXT("INI"), TEXT("NFO"), TEXT("USER"),
 	TEXT("ASP"), TEXT("SQL"), TEXT("VB"), TEXT("JS"), TEXT("CSS"), TEXT("PERL"), TEXT("PYTHON"), TEXT("LUA"),
 	TEXT("TEX"), TEXT("FORTRAN"), TEXT("BASH"), TEXT("FLASH"), TEXT("NSIS"), TEXT("TCL"), TEXT("LISP"), TEXT("SCHEME"),
-	TEXT("ASM"), TEXT("DIFF"), TEXT("PROPS"), TEXT("PS"), TEXT("RUBY"), TEXT("SMALLTALK"), TEXT("VHDL"), TEXT("KIX"), TEXT("AU3"),
-	TEXT("CAML"), TEXT("ADA"), TEXT("VERILOG"), TEXT("MATLAB"), TEXT("HASKELL"), TEXT("INNO"), TEXT("SEARCHRESULT"),
-	TEXT("CMAKE"), TEXT("YAML"),TEXT("COBOL"), TEXT("GUI4CLI"), TEXT("D"), TEXT("POWERSHELL"), TEXT("R"), TEXT("JSP"),
-	TEXT("COFFEESCRIPT"), TEXT("JSON"), TEXT("JAVASCRIPT"),
+	TEXT("ASM"), TEXT("DIFF"), TEXT("PROPS"), TEXT("PS"), TEXT("RUBY"), TEXT("SMALLTALK"), TEXT("VHDL"), TEXT("KIX"),
+	TEXT("AU3"), TEXT("CAML"), TEXT("ADA"), TEXT("VERILOG"), TEXT("MATLAB"), TEXT("HASKELL"), TEXT("INNO"), TEXT("SEARCHRESULT"),
+	TEXT("CMAKE"), TEXT("YAML"), TEXT("COBOL"), TEXT("GUI4CLI"), TEXT("D"), TEXT("POWERSHELL"), TEXT("R"), TEXT("JSP"),
+	TEXT("COFFEESCRIPT"), TEXT("JSON"), TEXT("JAVASCRIPT"), TEXT("FORTRAN_77"), TEXT("BAANC"), TEXT("SREC"), TEXT("IHEX"), TEXT("TEHEX"),
+	TEXT("SWIFT"), TEXT("ASN1"), TEXT("AVS"), TEXT("BLITZBASIC"), TEXT("PUREBASIC"), TEXT("FREEBASIC"), TEXT("CSOUND"), TEXT("ERLANG"),
+	TEXT("ESCRIPT"), TEXT("FORTH"), TEXT("LATEX"), TEXT("MMIXAL"), TEXT("NIM"), TEXT("NNCRONTAB"), TEXT("OSCRIPT"), TEXT("REBOL"),
+	TEXT("REGISTRY"), TEXT("RUST"), TEXT("SPICE"), TEXT("TXT2TAGS"), TEXT("VISUALPROLOG"), TEXT("TYPESCRIPT"), TEXT("JSON5"), TEXT("MSSQL"),
+	TEXT("GDSCRIPT"), TEXT("HOLLYWOOD"), TEXT("GOLANG"), TEXT("RAKU"), TEXT("TOML"), TEXT("SAS"), TEXT("ERRORLIST"), TEXT("ESCSEQ"),
 	TEXT("EXTERNAL")
 };
+static_assert(sizeof(langs) / sizeof(langs[0]) == L_EXTERNAL + 1, "langs[] must match enum LangType");
 
 
 
